@@ -1,30 +1,24 @@
 import re
+from collections import namedtuple
 
-DEFAULT_DOMAIN = 'gmail.com'
-DOMAINS = ('gmail.com', 'yandex.ru', 'mail.ru', )
+PatternsRepl = namedtuple('PatternsRepl', 'pattern, repl')
 
+GMAIL = 'gmail.com'
+YANDEX = 'yandex.ru'
+MAIL = 'mail.ru'
 
-class DomainFilter:
-    def __init__(self, domain):
-        self._domain = domain
-        self.default_filter = self.gmail_filter
+DEFAULT_DOMAIN = GMAIL
 
-    def __call__(self, content):
-        if self._domain == 'gmail.com':
-            return self.gmail_filter(content)
-        elif self._domain == 'yandex.ru':
-            return self.yandex_filter(content)
-        elif self._domain == 'mail.ru':
-            return self.mail_filter(content)
-        else:
-            return self.default_filter(content)
-
-    def gmail_filter(self, content):
-        return re.sub(r'([^.!?]*offer[^.]*\.)', '', content)
-
-    def yandex_filter(self, content):
-        return re.sub(r'<img.*?src="(.+)"[^\>]+>', r'\1', content)
+DOMAINS = {
+    GMAIL: PatternsRepl(r'([^.!?]*offer[^.]*\.)', ''),
+    YANDEX: PatternsRepl(r'<img.*?src="(.+)"[^\>]+>', r'\1'),
+    MAIL: PatternsRepl(r'(<img.*?src=".+)\.gif("[^\>]+>)', r'\1.png\2')
+}
 
 
-    def mail_filter(self, content):
-        return re.sub(r'(<img.*?src=".+)\.gif("[^\>]+>)', r'\1.png\2', content)
+def filter_content(domain, content):
+    pattern = DOMAINS.get(domain, DEFAULT_DOMAIN).pattern
+    repl = DOMAINS.get(domain, DEFAULT_DOMAIN).repl
+    # print('pattern: ', pattern, 'repl: ', repl)
+    return re.sub(pattern, repl, content)
+

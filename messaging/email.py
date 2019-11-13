@@ -1,4 +1,4 @@
-from domain_filters import DomainFilter, DOMAINS, DEFAULT_DOMAIN
+from domain_filters import filter_content, DOMAINS, DEFAULT_DOMAIN
 from email_validator import validate_email, EmailNotValidError
 import json
 
@@ -8,7 +8,7 @@ class Email:
     def __init__(self, email, content):
         self.email = email
         self.content = content
-        self.filter_func = DomainFilter(self.email_domain)
+        self.filter_func = filter_content
 
     @property
     def email(self):
@@ -47,4 +47,4 @@ class Email:
 
     @property
     def filtered_content(self):
-        return self.filter_func(self.content)
+        return self.filter_func(self.email_domain, self.content)

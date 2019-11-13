@@ -19,6 +19,5 @@ DOMAINS = {
 def filter_content(domain, content):
     pattern = DOMAINS.get(domain, DEFAULT_DOMAIN).pattern
     repl = DOMAINS.get(domain, DEFAULT_DOMAIN).repl
-    # print('pattern: ', pattern, 'repl: ', repl)
     return re.sub(pattern, repl, content)
 
